@@ -4,6 +4,22 @@
 
 #pragma warning(disable:4996)
 
+SOCKET Connections[100];
+int counter = 0;
+
+void ClientHandler(int index) {
+	char msg[256];
+	while (true) {
+		recv(Connections[index], msg, sizeof(msg), NULL);
+		for (int i = 0; i < counter; i++) {
+			if (index == i) {
+				continue;
+			}
+			send(Connections[i], msg, sizeof(msg), NULL);
+		}
+	}
+}
+
 int main(int argc, char* argv[]) {
 	WSAData wsaData;
 	WORD DLLVersion = MAKEWORD(2, 1);
@@ -23,14 +39,26 @@ int main(int argc, char* argv[]) {
 	listen(sListen, SOMAXCONN);
 
 	SOCKET newConnection;
-	newConnection = accept(sListen, (SOCKADDR*)&addr, &sizeofaddr);
+	for (int i = 0; i < 100; i++) {
 
-	if (newConnection == 0) {
-		std::cout << "Error #2\n";
+
+		newConnection = accept(sListen, (SOCKADDR*)&addr, &sizeofaddr);
+
+		if (newConnection == 0) {
+			std::cout << "Error #2\n";
+		}
+		else {
+			std::cout << "Client Connected!\n";
+			char msg[256] = "Hello";
+			send(newConnection, msg, sizeof(msg), NULL);
+
+			Connections[i] = newConnection;
+			counter++;
+			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler,(LPVOID)(i), NULL, NULL);
+		}
 	}
-	else {
-		std::cout << "Client Connected!\n";
-	}
+
+
 	system("pause");
 	return 0;
 }
