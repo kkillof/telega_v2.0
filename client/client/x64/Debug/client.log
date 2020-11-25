@@ -1,2 +1,4 @@
 ﻿  Source.cpp
+C:\Users\ilyak\Documents\GitHub\telega_v2.0\client\client\Source.cpp(13,35): warning C4312: приведение типов: преобразование из "int" в "char *" большего размера
+C:\Users\ilyak\Documents\GitHub\telega_v2.0\client\client\Source.cpp(53,29): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   client.vcxproj -> C:\Users\ilyak\Documents\GitHub\telega_v2.0\client\x64\Debug\client.exe
