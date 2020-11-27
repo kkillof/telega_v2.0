@@ -1,26 +1,34 @@
 #pragma comment(lib, "ws2_32.lib")
 #include <winsock2.h>
 #include <iostream>
+#include <string>
 
-#pragma warning(disable:4996)
+#pragma warning(disable: 4996)
 
 SOCKET Connections[100];
-int counter = 0;
+int Counter = 0;
 
 void ClientHandler(int index) {
-	char msg[256];
+	int msg_size;
 	while (true) {
-		recv(Connections[index], msg, sizeof(msg), NULL);
-		for (int i = 0; i < counter; i++) {
-			if (index == i) {
+		recv(Connections[index], (char*)&msg_size, sizeof(int), NULL);
+		char* msg = new char[msg_size + 1];
+		msg[msg_size] = '\0';
+		recv(Connections[index], msg, msg_size, NULL);
+		for (int i = 0; i < Counter; i++) {
+			if (i == index) {
 				continue;
 			}
-			send(Connections[i], msg, sizeof(msg), NULL);
+
+			send(Connections[i], (char*)&msg_size, sizeof(int), NULL);
+			send(Connections[i], msg, msg_size, NULL);
 		}
+		delete[] msg;
 	}
 }
 
 int main(int argc, char* argv[]) {
+	//WSAStartup
 	WSAData wsaData;
 	WORD DLLVersion = MAKEWORD(2, 1);
 	if (WSAStartup(DLLVersion, &wsaData) != 0) {
@@ -35,13 +43,11 @@ int main(int argc, char* argv[]) {
 	addr.sin_family = AF_INET;
 
 	SOCKET sListen = socket(AF_INET, SOCK_STREAM, NULL);
-	bind(sListen, (SOCKADDR*)&addr, sizeofaddr);
+	bind(sListen, (SOCKADDR*)&addr, sizeof(addr));
 	listen(sListen, SOMAXCONN);
 
 	SOCKET newConnection;
 	for (int i = 0; i < 100; i++) {
-
-
 		newConnection = accept(sListen, (SOCKADDR*)&addr, &sizeofaddr);
 
 		if (newConnection == 0) {
@@ -49,12 +55,14 @@ int main(int argc, char* argv[]) {
 		}
 		else {
 			std::cout << "Client Connected!\n";
-			char msg[256] = "Hello";
-			send(newConnection, msg, sizeof(msg), NULL);
+			std::string msg = "Hello. It`s my first network program!";
+			int msg_size = msg.size();
+			send(newConnection, (char*)&msg_size, sizeof(int), NULL);
+			send(newConnection, msg.c_str(), msg_size, NULL);
 
 			Connections[i] = newConnection;
-			counter++;
-			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler,(LPVOID)(i), NULL, NULL);
+			Counter++;
+			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler, (LPVOID)(i), NULL, NULL);
 		}
 	}
 

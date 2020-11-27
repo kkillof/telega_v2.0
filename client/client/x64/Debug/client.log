@@ -1,2 +1,4 @@
 ﻿  Source.cpp
+C:\Users\ilyak\Documents\GitHub\telega_v2.0\client\client\Source.cpp(48,29): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  LINK : не найден или не выполнена сборка C:\Users\ilyak\Documents\GitHub\telega_v2.0\client\x64\Debug\client.exe при последней инкрементной компоновке; выполняется полная компоновка
   client.vcxproj -> C:\Users\ilyak\Documents\GitHub\telega_v2.0\client\x64\Debug\client.exe
