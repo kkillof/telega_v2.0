@@ -1,21 +1,16 @@
 #pragma comment(lib, "ws2_32.lib")
 #include <winsock2.h>
 #include <iostream>
-#include <string>
 
 #pragma warning(disable:4996)
 
 SOCKET Connection;
 
 void ClientHandler() {
-	int msg_size=1;
+	char msg[256];
 	while (true) {
-		recv(Connection, (char*)msg_size, sizeof(int), NULL);
-		char* msg = new char[msg_size + 1];
-		msg[msg_size] = '\0';
-		recv(Connection, msg, msg_size, NULL);
+		recv(Connection, msg, sizeof(msg), NULL);
 		std::cout << msg << std::endl;
-		delete[] msg;
 		}
 	}
 
@@ -47,12 +42,10 @@ int main(int argc, char* argv[]) {
 
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ClientHandler, NULL, NULL, NULL);
 
-	std::string msg1;
+	char msg1[256];
 	while (true) {
-		std::getline(std::cin, msg1);
-		int msg_size = msg1.size();
-		send(Connection, (char*)&msg_size, sizeof(int), NULL);
-		send(Connection, msg1.c_str(), msg_size, NULL);
+		std::cin.getline(msg1, sizeof(msg1));
+		send(Connection, msg1, sizeof(msg1), NULL);
 		Sleep(10);
 	}
 

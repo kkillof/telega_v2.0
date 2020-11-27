@@ -8,20 +8,15 @@ SOCKET Connections[100];
 int counter = 0;
 
 void ClientHandler(int index) {
-	int msg_size=1;
+	char msg[256];
 	while (true) {
-		recv(Connections[index], (char*)msg_size, sizeof(int), NULL);
-		char* msg = new char[msg_size + 1];
-		msg[msg_size] = '\0';
-		recv(Connections[index], msg, msg_size, NULL);
+		recv(Connections[index], msg, sizeof(msg), NULL);
 		for (int i = 0; i < counter; i++) {
 			if (index == i) {
 				continue;
 			}
-			send(Connections[i], (char*)msg_size, sizeof(int), NULL);
-			send(Connections[i], msg, msg_size, NULL);
+			send(Connections[i], msg, sizeof(msg), NULL);
 		}
-		delete[] msg;
 	}
 }
 
@@ -54,10 +49,8 @@ int main(int argc, char* argv[]) {
 		}
 		else {
 			std::cout << "Client Connected!\n";
-			std::string msg = "Hello";
-			int msg_size = msg.size();
-			send(newConnection, (char*)msg_size, sizeof(int), NULL);
-			send(newConnection, msg.c_str(), msg_size, NULL);
+			char msg[256] = "Hello";
+			send(newConnection, msg, sizeof(msg), NULL);
 
 			Connections[i] = newConnection;
 			counter++;
